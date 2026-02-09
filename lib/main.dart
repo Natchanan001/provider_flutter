@@ -1,11 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
+import 'summary.dart';
+import 'cart.dart';
 void main() {
   runApp(
     ChangeNotifierProvider(
-      create: (context) => FavoriteModel(),
-      child: const MyApp(),
+      create: (context) => FavoriteModel(), 
+      child: MaterialApp(
+        initialRoute: '/catalog',
+      routes: {
+         '/catalog': (context) => const FavoriteListPage(),
+         '/cart': (context) => const CartPage(), 
+         '/summary': (context) => const SummaryPage(),
+       },
+      ),
     ),
   );
 }
