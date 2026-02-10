@@ -20,12 +20,20 @@ class CartPage extends StatelessWidget {
         children: [
           Expanded(
             child: ListView.builder(
-              itemCount: 20, 
+              itemCount: 20,
               itemBuilder: (context, index) {
                 if (favoriteModel.isFavorite(index)) {
                   return ListTile(
                     leading: const Icon(Icons.done, color: Colors.black),
                     title: Text('Item #$index'),
+                    // --- ✨ เพิ่มปุ่มลบตรงนี้ค่ะคุณพี่ ---
+                    trailing: IconButton(
+                      icon: const Icon(Icons.remove_circle_outline, color: Colors.black),
+                      onPressed: () {
+                        // เรียกฟังก์ชันเดิมที่คุณพี่มีเพื่อเอาของออก
+                        favoriteModel.toggleFavorite(index);
+                      },
+                    ),
                   );
                 }
                 return const SizedBox.shrink();
