@@ -2,24 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'summary.dart';
 import 'cart.dart';
+
 void main() {
   runApp(
     ChangeNotifierProvider(
-      create: (context) => FavoriteModel(), 
-      child: MaterialApp(
-        initialRoute: '/catalog',
-      routes: {
-         '/catalog': (context) => const FavoriteListPage(),
-         '/cart': (context) => const CartPage(), 
-         '/summary': (context) => const SummaryPage(),
-       },
-      ),
+      create: (context) => FavoriteModel(),
+      child: const MyApp(),
     ),
   );
 }
 
 class FavoriteModel extends ChangeNotifier {
   final Set<int> _favorites = {};
+  Set<int> get favorites => _favorites;
 
   bool isFavorite(int index) => _favorites.contains(index);
 
@@ -31,6 +26,11 @@ class FavoriteModel extends ChangeNotifier {
     }
     notifyListeners();
   }
+
+  void clear() {
+    _favorites.clear();
+    notifyListeners();
+  }
 }
 
 class MyApp extends StatelessWidget {
@@ -39,47 +39,44 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Favorite List',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.white10),
-        useMaterial3: true,
-      ),
-      home: const FavoriteListPage(),
+      title: 'Provider Shopper',
       debugShowCheckedModeBanner: true,
+      initialRoute: '/catalog',
+      routes: {
+        '/catalog': (context) => const CatalogPage(),
+        '/cart': (context) => const CartPage(),
+        '/summary': (context) => const SummaryPage(),
+      },
     );
   }
 }
 
-class FavoriteListPage extends StatelessWidget {
-  const FavoriteListPage({super.key});
+class CatalogPage extends StatelessWidget {
+  const CatalogPage({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'Favorite List',
-          style: TextStyle(color: Colors.black),
-        ),
-        centerTitle: true,
-        backgroundColor: Colors.white60,
+        title: const Text('Catalog', style: TextStyle(fontWeight: FontWeight.bold)),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.shopping_cart),
+            onPressed: () => Navigator.pushNamed(context, '/cart'),
+          )
+        ],
       ),
       body: ListView.builder(
-        itemCount: 20,
+        itemCount: 15,
         itemBuilder: (context, index) {
           return ListTile(
+            leading: Container(width: 40, height: 40, color: Colors.primaries[index % Colors.primaries.length]),
             title: Text('Item #$index'),
             trailing: Consumer<FavoriteModel>(
-              builder: (context, favoriteModel, child) {
-                final isFavorite = favoriteModel.isFavorite(index);
-                return IconButton(
-                  icon: Icon(
-                    isFavorite ? Icons.favorite : Icons.favorite_border,
-                    color: isFavorite ? Colors.red : null,
-                  ),
-                  onPressed: () {
-                    favoriteModel.toggleFavorite(index);
-                  },
+              builder: (context, model, child) {
+                return TextButton(
+                  onPressed: () => model.toggleFavorite(index),
+                  child: model.isFavorite(index) ? const Icon(Icons.check) : const Text('ADD'),
                 );
               },
             ),
